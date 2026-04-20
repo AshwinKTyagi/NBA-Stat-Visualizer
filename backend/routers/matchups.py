@@ -4,10 +4,10 @@ from fastapi import APIRouter, HTTPException
 from nba_api.stats.endpoints import teamgamelog, leaguedashteamstats
 import pandas as pd
 
+from config import CURRENT_SEASON
+
 router = APIRouter()
 logger = logging.getLogger("nba.matchups")
-
-CURRENT_SEASON = "2024-25"
 
 STAT_LABELS = {
     "offRating": "Off Rating",

@@ -2,6 +2,22 @@ import logging
 import time
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+# Patch nba_api to use Chrome TLS fingerprint via curl_cffi.
+# NBA.com (Akamai) silently drops requests from Python's default TLS stack.
+import nba_api.library.http as _nba_http
+from curl_cffi import requests as _cffi_requests
+
+class _ChromeSession:
+    @staticmethod
+    def get(*args, **kwargs):
+        kwargs.setdefault("impersonate", "chrome120")
+        kwargs.setdefault("timeout", 60)
+        return _cffi_requests.get(*args, **kwargs)
+
+_nba_http.requests = _ChromeSession()
+
+from config import CORS_ORIGIN
 from routers import teams, players, matchups
 
 logging.basicConfig(
@@ -15,7 +31,7 @@ app = FastAPI(title="NBA Stat Visualizer API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[CORS_ORIGIN],
     allow_methods=["*"],
     allow_headers=["*"],
 )

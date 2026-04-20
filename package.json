@@ -1,0 +1,24 @@
+{
+  "name": "nbastatvisualizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --names \"api,web\" --prefix-colors \"cyan,magenta\" \"backend/.venv/bin/uvicorn main:app --reload --app-dir backend\" \"npm run dev --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AshwinKTyagi/NBA-Stat-Visualizer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/AshwinKTyagi/NBA-Stat-Visualizer/issues"
+  },
+  "homepage": "https://github.com/AshwinKTyagi/NBA-Stat-Visualizer#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

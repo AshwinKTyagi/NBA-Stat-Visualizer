@@ -1,19 +1,22 @@
 *, *::before, *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  background: #0d1117;
-  color: #e6edf3;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #07090f;
+  color: #e2eaf3;
+  font-family: 'Exo 2', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-}
-
-#root {
   min-height: 100vh;
 }
 
 button {
   font-family: inherit;
+  cursor: pointer;
+}
+
+#root {
+  min-height: 100vh;
 }

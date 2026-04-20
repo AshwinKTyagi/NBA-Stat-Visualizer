@@ -4,10 +4,10 @@ from fastapi import APIRouter, HTTPException
 from nba_api.stats.endpoints import leaguedashplayerstats, commonteamroster
 import pandas as pd
 
+from config import CURRENT_SEASON
+
 router = APIRouter()
 logger = logging.getLogger("nba.players")
-
-CURRENT_SEASON = "2024-25"
 
 
 @router.get("/team/{team_id}")

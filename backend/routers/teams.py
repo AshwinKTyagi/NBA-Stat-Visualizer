@@ -5,10 +5,10 @@ from nba_api.stats.endpoints import leaguestandings, leaguedashteamstats
 from nba_api.stats.static import teams as nba_teams_static
 import pandas as pd
 
+from config import CURRENT_SEASON
+
 router = APIRouter()
 logger = logging.getLogger("nba.teams")
-
-CURRENT_SEASON = "2024-25"
 
 
 @router.get("")

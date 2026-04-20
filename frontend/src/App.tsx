@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { teamsApi, PlayoffTeam } from "./api/client";
+import { teamsApi } from "./api/client";
+import type { PlayoffTeam } from "./api/client";
 import PlayoffBracket from "./components/PlayoffBracket";
 import MatchupView from "./components/MatchupView";
 import "./App.css";
@@ -10,38 +11,91 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     teamsApi
       .getPlayoffPicture()
       .then(setPlayoffTeams)
-      .catch((e) => setError(e.message))
+      .catch((e) => {
+        const isNetwork = e?.code === "ERR_NETWORK" || e?.message === "Network Error";
+        setError(
+          isNetwork
+            ? "Backend not reachable — make sure the API server is running on port 8000.\n\nRun: backend/.venv/bin/uvicorn main:app --reload --app-dir backend"
+            : e.message
+        );
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
+
+  const team1Playoff = selectedMatchup
+    ? playoffTeams.find((t) => t.teamId === selectedMatchup.team1Id)
+    : undefined;
+  const team2Playoff = selectedMatchup
+    ? playoffTeams.find((t) => t.teamId === selectedMatchup.team2Id)
+    : undefined;
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>NBA Playoff Matchup Analyzer</h1>
-        <p className="subtitle">2024-25 Season · Advanced Stats</p>
+        <div className="header-wordmark">
+          <div className="header-icon">🏀</div>
+          <div className="header-text">
+            <h1>Playoff Analyzer</h1>
+            <p className="subtitle">2024–25 Season · Advanced Stats</p>
+          </div>
+        </div>
+        <div className="live-badge">
+          <span className="live-dot" />
+          Live Season
+        </div>
       </header>
 
-      <main className="app-main">
-        {loading && <div className="loading">Loading playoff picture...</div>}
-        {error && <div className="error">Could not load data: {error}</div>}
+      <main>
+        {loading && (
+          <div className="loading">
+            <div className="loading-dots">
+              <div className="loading-dot" />
+              <div className="loading-dot" />
+              <div className="loading-dot" />
+            </div>
+            Loading Playoff Picture
+          </div>
+        )}
+
+        {error && (
+          <div className="error">
+            <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "inherit" }}>{error}</pre>
+            <button className="retry-btn" onClick={load}>↺ Retry</button>
+          </div>
+        )}
 
         {!loading && !error && (
           <>
             <section className="section">
-              <h2>Playoff Picture</h2>
-              <p className="hint">Click a first-round matchup to analyze it</p>
+              <div className="section-label">2024–25 Playoff Picture</div>
               <PlayoffBracket
                 teams={playoffTeams}
+                selectedMatchup={selectedMatchup}
                 onSelectMatchup={(t1, t2) => setSelectedMatchup({ team1Id: t1, team2Id: t2 })}
               />
             </section>
 
-            {selectedMatchup && (
-              <MatchupView team1Id={selectedMatchup.team1Id} team2Id={selectedMatchup.team2Id} />
+            {selectedMatchup ? (
+              <MatchupView
+                team1Id={selectedMatchup.team1Id}
+                team2Id={selectedMatchup.team2Id}
+                team1Playoff={team1Playoff}
+                team2Playoff={team2Playoff}
+                onClose={() => setSelectedMatchup(null)}
+              />
+            ) : (
+              <div className="empty-state">
+                <span className="empty-state-icon">↑</span>
+                <p>Select a first-round matchup above to see the full analysis</p>
+              </div>
             )}
           </>
         )}
