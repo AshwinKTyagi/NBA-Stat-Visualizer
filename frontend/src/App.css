@@ -1,0 +1,284 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0d1117;
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+.app-header {
+  padding: 32px 0 24px;
+  border-bottom: 1px solid #21262d;
+  margin-bottom: 32px;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: #8b949e;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.section {
+  margin-bottom: 48px;
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #cdd9e5;
+}
+
+.hint {
+  color: #8b949e;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.loading {
+  color: #8b949e;
+  padding: 32px 0;
+  text-align: center;
+}
+
+.error {
+  background: #3d1d1d;
+  color: #f85149;
+  border: 1px solid #f85149;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+/* Playoff Bracket */
+.playoff-bracket {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.conference-side h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.first-round-matchups {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matchup-btn {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.matchup-btn:hover {
+  border-color: #e63946;
+  background: #1c2128;
+}
+
+/* Stat Comparison */
+.stat-comparison {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.team-headers {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.team-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 60px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.stat-val {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #8b949e;
+}
+
+.stat-val.left {
+  text-align: right;
+}
+
+.stat-val.winner {
+  color: #3fb950;
+}
+
+.bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-name {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #8b949e;
+}
+
+.bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #21262d;
+  display: flex;
+  overflow: hidden;
+}
+
+.bar-fill.left {
+  background: #e63946;
+  border-radius: 4px 0 0 4px;
+}
+
+.bar-fill.right {
+  background: #457b9d;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Matchup View */
+.matchup-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #21262d;
+}
+
+/* Roster Pickers */
+.roster-pickers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.roster-col h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.roster-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-btn {
+  width: 100%;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  color: #e6edf3;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.2s;
+  text-align: left;
+}
+
+.player-btn:hover:not(.disabled) {
+  border-color: #58a6ff;
+}
+
+.player-btn.selected {
+  border-color: #e63946;
+  background: #1c1015;
+}
+
+.player-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.player-num {
+  color: #8b949e;
+  min-width: 28px;
+}
+
+.player-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.player-pos {
+  color: #8b949e;
+  font-size: 0.78rem;
+}
+
+/* Radar Chart */
+.radar-chart-wrapper {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .playoff-bracket,
+  .roster-pickers {
+    grid-template-columns: 1fr;
+  }
+}
