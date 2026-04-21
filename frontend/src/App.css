@@ -36,7 +36,7 @@
 /* ============= LAYOUT ============= */
 
 .app {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 28px 100px;
 }
@@ -830,7 +830,7 @@
   display: flex;
   align-items: center;
   gap: 0;
-  overflow-x: auto;
+  min-width: max-content;
   padding-bottom: 12px;
 }
 
@@ -860,7 +860,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 10px;
   white-space: nowrap;
@@ -890,7 +890,7 @@
   position: absolute;
   right: -17px;
   width: 17px;
-  border-color: var(--border-2);
+  border-color: var(--text-muted);
   border-style: solid;
   border-width: 0;
 }
@@ -915,7 +915,7 @@
   width: 17px;
   top: 50%;
   height: 1px;
-  background: var(--border-2);
+  background: var(--text-muted);
 }
 
 /* Connector lines — west side (lines extend left) */
@@ -924,7 +924,7 @@
   position: absolute;
   left: -17px;
   width: 17px;
-  border-color: var(--border-2);
+  border-color: var(--text-muted);
   border-style: solid;
   border-width: 0;
 }
@@ -949,13 +949,13 @@
   width: 17px;
   top: 50%;
   height: 1px;
-  background: var(--border-2);
+  background: var(--text-muted);
 }
 
 /* Play-in arrow */
 .bk-playin-arrow {
   font-size: 0.9rem;
-  color: var(--text-dim);
+  color: var(--text-muted);
   padding: 0 4px;
   align-self: center;
   flex-shrink: 0;
@@ -968,11 +968,11 @@
 /* Matchup card */
 .bk-card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--text-muted);
   border-radius: var(--r-sm);
   overflow: hidden;
   display: block;
-  width: 96px;
+  width: 165px;
   cursor: default;
   text-align: left;
   transition: border-color var(--t), background var(--t), box-shadow var(--t);
@@ -983,7 +983,7 @@ button.bk-card {
 }
 
 button.bk-card:hover {
-  border-color: var(--border-2);
+  border-color: var(--text);
   background: var(--surface-2);
   box-shadow: 0 4px 14px rgba(0,0,0,0.4);
 }
@@ -999,14 +999,14 @@ button.bk-card:hover {
 }
 
 .bk-card--compact {
-  width: 84px;
+  width: 150px;
 }
 
 .bk-team {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 7px;
+  padding: 6px 9px;
 }
 
 .bk-team--tbd {
@@ -1016,7 +1016,7 @@ button.bk-card:hover {
 
 .bk-divider {
   height: 1px;
-  background: var(--border);
+  background: var(--text-muted);
   margin: 0 7px;
 }
 
@@ -1026,8 +1026,8 @@ button.bk-card:hover {
 
 .bk-seed {
   font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--text-muted);
+  font-size: 0.68rem;
+  color: var(--text);
   min-width: 14px;
   flex-shrink: 0;
 }
@@ -1044,17 +1044,95 @@ button.bk-card:hover {
 }
 
 .bk-name {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .bk-team--tbd .bk-name {
   color: var(--text-muted);
   font-weight: 400;
+}
+
+.bk-series-w {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.bk-card--active .bk-series-w {
+  color: var(--gold);
+}
+
+.bk-team--winner {
+  border-left: 2px solid var(--gold);
+  padding-left: 7px;
+}
+
+.bk-team--winner .bk-name,
+.bk-team--winner .bk-series-w,
+.bk-team--winner .bk-seed {
+  color: var(--gold);
+}
+
+.bk-connector--bold {
+  border-color: var(--gold) !important;
+  border-width: 2px !important;
+  opacity: 1 !important;
+}
+
+.bk-zoom-outer {
+  position: relative;
+}
+
+.bk-zoom-wrap {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) var(--surface);
+}
+
+.bk-zoom-wrap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.bk-zoom-wrap::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 3px;
+}
+
+.bk-zoom-wrap::-webkit-scrollbar-thumb {
+  background: var(--border-2);
+  border-radius: 3px;
+}
+
+.bk-zoom-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+.bk-recenter {
+  margin-top: 10px;
+  padding: 5px 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--t), color var(--t);
+  display: block;
+  margin-left: auto;
+}
+
+.bk-recenter:hover {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 /* Finals center column */

@@ -17,6 +17,7 @@ export interface PlayoffTeam {
   wins: number;
   losses: number;
   winPct: number;
+  seriesWins: number;
 }
 
 export interface TeamStats {
@@ -66,6 +67,7 @@ export interface PlayerStats {
   astPct: number;
   tovPct: number;
   rebPct: number;
+  impact: number;
 }
 
 export interface StandingsTeam {
@@ -89,6 +91,7 @@ export interface RosterPlayer {
   number: string;
   position: string;
   age: string;
+  impact: number;
 }
 
 export const teamsApi = {

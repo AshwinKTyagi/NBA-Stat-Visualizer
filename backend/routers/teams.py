@@ -1,7 +1,7 @@
 import logging
 import time
 from fastapi import APIRouter, HTTPException
-from nba_api.stats.endpoints import leaguestandings, leaguedashteamstats
+from nba_api.stats.endpoints import leaguestandings, leaguedashteamstats, leaguegamelog
 from nba_api.stats.static import teams as nba_teams_static
 import pandas as pd
 
@@ -26,7 +26,19 @@ def get_playoff_picture():
     df = standings.get_data_frames()[0]
     df = df[df["PlayoffRank"].notna() & (df["PlayoffRank"] != "")]
     df["PlayoffRank"] = pd.to_numeric(df["PlayoffRank"], errors="coerce")
-    df = df[df["PlayoffRank"] <= 8].sort_values(["Conference", "PlayoffRank"])
+    df = df[df["PlayoffRank"] <= 10].sort_values(["Conference", "PlayoffRank"])
+
+    series_wins: dict[int, int] = {}
+    try:
+        gl = leaguegamelog.LeagueGameLog(
+            season=CURRENT_SEASON,
+            season_type_all_star="Playoffs",
+        )
+        gl_df = gl.league_game_log.get_data_frame()
+        wins = gl_df[gl_df["WL"] == "W"].groupby("TEAM_ID").size()
+        series_wins = {int(tid): int(w) for tid, w in wins.items()}
+    except Exception as e:
+        logger.warning("LeagueGameLog playoff series wins fetch failed: %s", e)
 
     result = []
     for _, row in df.iterrows():
@@ -39,6 +51,7 @@ def get_playoff_picture():
             "wins": int(row["WINS"]),
             "losses": int(row["LOSSES"]),
             "winPct": float(row["WinPCT"]),
+            "seriesWins": series_wins.get(int(row["TeamID"]), 0),
         })
     return result
 

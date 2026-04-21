@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import type { PlayoffTeam } from '../api/client';
 
 interface Props {
@@ -12,7 +13,15 @@ interface MatchupSlot {
   clickable: boolean;
 }
 
-function TeamRow({ team, isPlayIn }: { team: PlayoffTeam | null; isPlayIn?: boolean }) {
+function TeamRow({
+  team,
+  isPlayIn,
+  isWinner,
+}: {
+  team: PlayoffTeam | null;
+  isPlayIn?: boolean;
+  isWinner?: boolean;
+}) {
   if (!team) {
     return (
       <div className="bk-team bk-team--tbd">
@@ -23,14 +32,15 @@ function TeamRow({ team, isPlayIn }: { team: PlayoffTeam | null; isPlayIn?: bool
   }
   return (
     <div
-      className="bk-team"
+      className={`bk-team ${isWinner ? 'bk-team--winner' : ''}`}
       title={`${team.teamName} (${team.wins}–${team.losses})`}
     >
       <span className="bk-seed">
         {team.playoffRank}
         {isPlayIn && <sup className="bk-pi">PI</sup>}
       </span>
-      <span className="bk-name">{team.abbreviation || team.teamName.slice(0, 3).toUpperCase()}</span>
+      <span className="bk-name">{team.teamName}</span>
+      {!isPlayIn && <span className="bk-series-w">{team.seriesWins}</span>}
     </div>
   );
 }
@@ -47,6 +57,9 @@ function MatchupCard({
   compact?: boolean;
 }) {
   const Tag = slot.clickable ? 'button' : 'div';
+  const threshold = compact ? 1 : 4;
+  const topIsWinner = (slot.topTeam?.seriesWins ?? 0) >= threshold && !!slot.topTeam;
+  const bottomIsWinner = (slot.bottomTeam?.seriesWins ?? 0) >= threshold && !!slot.bottomTeam;
   return (
     <Tag
       className={`bk-card ${active ? 'bk-card--active' : ''} ${!slot.clickable ? 'bk-card--tbd' : ''} ${compact ? 'bk-card--compact' : ''}`}
@@ -57,9 +70,9 @@ function MatchupCard({
           : undefined
       }
     >
-      <TeamRow team={slot.topTeam} />
+      <TeamRow team={slot.topTeam} isPlayIn={compact} isWinner={topIsWinner} />
       <div className="bk-divider" />
-      <TeamRow team={slot.bottomTeam} />
+      <TeamRow team={slot.bottomTeam} isPlayIn={compact} isWinner={bottomIsWinner} />
     </Tag>
   );
 }
@@ -73,6 +86,13 @@ function isMatchupActive(
   return (
     (selected.team1Id === t1.teamId && selected.team2Id === t2.teamId) ||
     (selected.team1Id === t2.teamId && selected.team2Id === t1.teamId)
+  );
+}
+
+function slotHasWinner(slot: MatchupSlot, threshold = 4) {
+  return (
+    ((slot.topTeam?.seriesWins ?? 0) >= threshold && !!slot.topTeam) ||
+    ((slot.bottomTeam?.seriesWins ?? 0) >= threshold && !!slot.bottomTeam)
   );
 }
 
@@ -143,9 +163,12 @@ function ConferenceBracket({
                   onSelectMatchup(slot.topTeam.teamId, slot.bottomTeam.teamId)
                 }
               />
-              {/* right-side connector line for pairs */}
-              {i % 2 === 0 && <div className="bk-connector bk-connector--top" />}
-              {i % 2 === 1 && <div className="bk-connector bk-connector--bottom" />}
+              {i % 2 === 0 && (
+                <div className={`bk-connector bk-connector--top ${slotHasWinner(slot) ? 'bk-connector--bold' : ''}`} />
+              )}
+              {i % 2 === 1 && (
+                <div className={`bk-connector bk-connector--bottom ${slotHasWinner(slot) ? 'bk-connector--bold' : ''}`} />
+              )}
             </div>
           ))}
         </div>
@@ -158,8 +181,12 @@ function ConferenceBracket({
           {qfSlots.map((slot, i) => (
             <div key={i} className={`bk-slot-wrap bk-pair-${i % 2 === 0 ? 'top' : 'bottom'}`}>
               <MatchupCard slot={slot} active={false} />
-              {i % 2 === 0 && <div className="bk-connector bk-connector--top" />}
-              {i % 2 === 1 && <div className="bk-connector bk-connector--bottom" />}
+              {i % 2 === 0 && (
+                <div className={`bk-connector bk-connector--top ${slotHasWinner(slot) ? 'bk-connector--bold' : ''}`} />
+              )}
+              {i % 2 === 1 && (
+                <div className={`bk-connector bk-connector--bottom ${slotHasWinner(slot) ? 'bk-connector--bold' : ''}`} />
+              )}
             </div>
           ))}
         </div>
@@ -171,7 +198,7 @@ function ConferenceBracket({
         <div className="bk-round-slots">
           <div className="bk-slot-wrap">
             <MatchupCard slot={cfSlot} active={false} />
-            <div className="bk-connector bk-connector--finals" />
+            <div className={`bk-connector bk-connector--finals ${slotHasWinner(cfSlot) ? 'bk-connector--bold' : ''}`} />
           </div>
         </div>
       </div>
@@ -190,23 +217,50 @@ function FinalsSlot() {
 }
 
 export default function PlayoffBracket({ teams, selectedMatchup, onSelectMatchup }: Props) {
+  const [scale, setScale] = useState(1);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    setScale((s) => Math.min(2.0, Math.max(0.4, s - e.deltaY * 0.001)));
+  };
+
+  const recenter = () => {
+    if (wrapRef.current) {
+      const el = wrapRef.current;
+      const fitScale = el.clientWidth / el.scrollWidth;
+      setScale(Math.max(0.4, fitScale));
+      el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+    }
+  };
+
   return (
-    <div className="bk-bracket">
-      <ConferenceBracket
-        teams={teams}
-        conference="East"
-        side="east"
-        selectedMatchup={selectedMatchup}
-        onSelectMatchup={onSelectMatchup}
-      />
-      <FinalsSlot />
-      <ConferenceBracket
-        teams={teams}
-        conference="West"
-        side="west"
-        selectedMatchup={selectedMatchup}
-        onSelectMatchup={onSelectMatchup}
-      />
+    <div className="bk-zoom-outer">
+      <div className="bk-zoom-wrap" ref={wrapRef} onWheel={handleWheel}>
+        <div
+          className="bk-bracket"
+          style={{ transform: `scale(${scale})`, transformOrigin: 'top center' }}
+        >
+        <ConferenceBracket
+          teams={teams}
+          conference="East"
+          side="east"
+          selectedMatchup={selectedMatchup}
+          onSelectMatchup={onSelectMatchup}
+        />
+        <FinalsSlot />
+        <ConferenceBracket
+          teams={teams}
+          conference="West"
+          side="west"
+          selectedMatchup={selectedMatchup}
+          onSelectMatchup={onSelectMatchup}
+        />
+        </div>
+      </div>
+      <button className="bk-recenter" onClick={recenter} title="Reset zoom and center bracket">
+        ⊙ Recenter
+      </button>
     </div>
   );
 }
