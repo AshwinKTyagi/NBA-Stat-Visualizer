@@ -43,6 +43,37 @@ def get_playoff_picture():
     return result
 
 
+@router.get("/standings")
+def get_standings():
+    logger.info("Fetching full standings from nba_api (season=%s)", CURRENT_SEASON)
+    t0 = time.perf_counter()
+    standings = leaguestandings.LeagueStandings(season=CURRENT_SEASON)
+    logger.info("LeagueStandings fetched in %.0fms", (time.perf_counter() - t0) * 1000)
+    df = standings.get_data_frames()[0]
+    df["PlayoffRank"] = pd.to_numeric(df["PlayoffRank"], errors="coerce")
+    df["ConferenceGamesBack"] = pd.to_numeric(df.get("ConferenceGamesBack", pd.Series(dtype=float)), errors="coerce")
+    df = df.sort_values(["Conference", "PlayoffRank"])
+
+    result = []
+    for _, row in df.iterrows():
+        playoff_rank = int(row["PlayoffRank"]) if pd.notna(row["PlayoffRank"]) else 99
+        result.append({
+            "teamId": int(row["TeamID"]),
+            "teamName": row["TeamName"],
+            "abbreviation": row["TeamSlug"].upper() if "TeamSlug" in row else "",
+            "conference": row["Conference"],
+            "conferenceRank": playoff_rank,
+            "wins": int(row["WINS"]),
+            "losses": int(row["LOSSES"]),
+            "winPct": float(row["WinPCT"]),
+            "homeRecord": str(row.get("HOME", "")),
+            "awayRecord": str(row.get("ROAD", "")),
+            "lastTen": str(row.get("L10", "")),
+            "playoffRank": playoff_rank,
+        })
+    return result
+
+
 @router.get("/{team_id}/stats")
 def get_team_advanced_stats(team_id: int):
     logger.info("Fetching advanced stats for team_id=%d", team_id)
