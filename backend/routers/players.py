@@ -41,9 +41,10 @@ def get_player_advanced_stats(player_id: int):
         dash = leaguedashplayerstats.LeagueDashPlayerStats(
             season=CURRENT_SEASON,
             measure_type_detailed_defense="Advanced",
-            per_mode_simple="PerGame",
+            per_mode_detailed="PerGame",
         )
         df = dash.get_data_frames()[0]
+        df = df.fillna(0)
         logger.info("Advanced player stats fetched in %.0fms", (time.perf_counter() - t0) * 1000)
         row = df[df["PLAYER_ID"] == player_id]
         if row.empty:
@@ -54,9 +55,10 @@ def get_player_advanced_stats(player_id: int):
         base_dash = leaguedashplayerstats.LeagueDashPlayerStats(
             season=CURRENT_SEASON,
             measure_type_detailed_defense="Base",
-            per_mode_simple="PerGame",
+            per_mode_detailed="PerGame",
         )
         base_df = base_dash.get_data_frames()[0]
+        base_df = base_df.fillna(0)
         logger.info("Base player stats fetched in %.0fms", (time.perf_counter() - t1) * 1000)
         base_row = base_df[base_df["PLAYER_ID"] == player_id].iloc[0]
 
@@ -69,14 +71,14 @@ def get_player_advanced_stats(player_id: int):
             "reb": round(float(base_row["REB"]), 1),
             "stl": round(float(base_row["STL"]), 1),
             "blk": round(float(base_row["BLK"]), 1),
-            "per": round(float(row["PLAYER_IMPACT_ESTIMATE"]) * 100, 1),
+            "per": round(float(row.get("PIE", 0)) * 100, 1),
             "trueShootingPct": round(float(row["TS_PCT"]) * 100, 1),
             "usagePct": round(float(row["USG_PCT"]) * 100, 1),
             "offRating": round(float(row["OFF_RATING"]), 1),
             "defRating": round(float(row["DEF_RATING"]), 1),
             "netRating": round(float(row["NET_RATING"]), 1),
             "astPct": round(float(row["AST_PCT"]) * 100, 1),
-            "tovPct": round(float(row["TM_TOV_PCT"]) * 100, 1) if "TM_TOV_PCT" in row else 0,
+            "tovPct": round(float(row.get("TM_TOV_PCT", 0)) * 100, 1),
             "rebPct": round(float(row["REB_PCT"]) * 100, 1),
         }
     except HTTPException:
