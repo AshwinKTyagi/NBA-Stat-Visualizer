@@ -35,6 +35,7 @@ export default function PlayerRadarChart({ players }: Props) {
     players.forEach((p) => {
       const raw = p[key] as number;
       entry[p.name] = Math.min(Math.max(Math.round((raw / max) * 100), 0), 100);
+      entry[`${p.name}_raw`] = raw;
     });
     return entry;
   });
@@ -71,7 +72,10 @@ export default function PlayerRadarChart({ players }: Props) {
               fontSize: "0.8rem",
               fontFamily: "'DM Mono', monospace",
             }}
-            formatter={(val: number, name: string) => [`${val}`, name]}
+            formatter={(val: number, name: string, props: { payload?: Record<string, number> }) => {
+              const raw = props.payload?.[`${name}_raw`] ?? val;
+              return [`${raw}`, name];
+            }}
           />
         </RadarChart>
       </ResponsiveContainer>

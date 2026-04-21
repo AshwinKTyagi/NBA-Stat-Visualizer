@@ -17,7 +17,7 @@ class _ChromeSession:
 
 _nba_http.requests = _ChromeSession()
 
-from config import CORS_ORIGIN
+from config import CORS_ORIGIN, CORS_ORIGIN_REGEX
 from routers import teams, players, matchups
 
 logging.basicConfig(
@@ -32,6 +32,7 @@ app = FastAPI(title="NBA Stat Visualizer API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[CORS_ORIGIN],
+    allow_origin_regex=CORS_ORIGIN_REGEX,
     allow_methods=["*"],
     allow_headers=["*"],
 )

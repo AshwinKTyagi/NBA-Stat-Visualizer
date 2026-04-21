@@ -38,8 +38,8 @@ def fetch_team_stats(team_id: int, df: pd.DataFrame) -> dict:
         "trueShootingPct": round(float(row["TS_PCT"]) * 100, 1),
         "astPct": round(float(row["AST_PCT"]) * 100, 1),
         "rebPct": round(float(row["REB_PCT"]) * 100, 1),
-        "tovPct": round(float(row["TM_TOV_PCT"]) * 100, 1),
-        "efgPct": round(float(row["EFG_PCT"]) * 100, 1),
+        "tovPct": round(float(row.get("TM_TOV_PCT", 0)) * 100, 1),
+        "efgPct": round(float(row.get("EFG_PCT", 0)) * 100, 1),
         "piePct": round(float(row["PIE"]) * 100, 1),
     }
 
@@ -52,9 +52,10 @@ def get_matchup(team1_id: int, team2_id: int):
         dash = leaguedashteamstats.LeagueDashTeamStats(
             season=CURRENT_SEASON,
             measure_type_detailed_defense="Advanced",
-            per_mode_simple="PerGame",
+            per_mode_detailed="PerGame",
         )
         df = dash.get_data_frames()[0]
+        df = df.fillna(0)
         logger.info("LeagueDashTeamStats fetched in %.0fms", (time.perf_counter() - t0) * 1000)
 
         team1 = fetch_team_stats(team1_id, df)

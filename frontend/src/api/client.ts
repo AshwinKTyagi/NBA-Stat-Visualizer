@@ -17,6 +17,7 @@ export interface PlayoffTeam {
   wins: number;
   losses: number;
   winPct: number;
+  seriesWins: number;
 }
 
 export interface TeamStats {
@@ -66,6 +67,22 @@ export interface PlayerStats {
   astPct: number;
   tovPct: number;
   rebPct: number;
+  impact: number;
+}
+
+export interface StandingsTeam {
+  teamId: number;
+  teamName: string;
+  abbreviation: string;
+  conference: string;
+  conferenceRank: number;
+  wins: number;
+  losses: number;
+  winPct: number;
+  homeRecord: string;
+  awayRecord: string;
+  lastTen: string;
+  playoffRank: number;
 }
 
 export interface RosterPlayer {
@@ -74,11 +91,13 @@ export interface RosterPlayer {
   number: string;
   position: string;
   age: string;
+  impact: number;
 }
 
 export const teamsApi = {
   getAll: () => api.get<Team[]>("/teams").then((r) => r.data),
   getPlayoffPicture: () => api.get<PlayoffTeam[]>("/teams/playoff-picture").then((r) => r.data),
+  getStandings: () => api.get<StandingsTeam[]>("/teams/standings").then((r) => r.data),
   getStats: (teamId: number) => api.get<TeamStats>(`/teams/${teamId}/stats`).then((r) => r.data),
 };
 
